@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Website</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            transition: background-color 0.3s;
+        }
+
+        #navbar {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1;
+            transition: background-color 0.3s;
+        }
+
+        #navbar:hover {
+            background-color: #555;
+        }
+
+        #info {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            position: fixed;
+            width: 100%;
+            top: 40px;
+            z-index: 1;
+            display: none;
+        }
+
+        #content {
+            margin-top: 80px;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .post {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: calc(33.33% - 20px);
+            box-sizing: border-box;
+            position: relative;
+            transition: transform 0.3s;
+            overflow: hidden;
+        }
+
+        .post:hover {
+            transform: scale(1.05);
+        }
+
+        .post img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .post h2 {
+            margin-top: 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .channel-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .channel-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .channel-info span {
+            font-weight: bold;
+            font-size: 16px;
+            color: #555;
+        }
+
+        .post-details {
+            font-size: 14px;
+            color: #777;
+        }
+
+        .tooltip {
+            position: absolute;
+            display: none;
+            padding: 5px;
+            background-color: #333;
+            color: white;
+            border-radius: 5px;
+            z-index: 2;
+        }
+
+        #accordion, #tabs, #selectable {
+            margin-top: 20px;
+        }
+
+        #datepicker {
+            margin-top: 20px;
+        }
+
+        #progressbar {
+            margin-top: 20px;
+        }
+
+        #dialog {
+            display: none;
+        }
+
+        .ui-dialog-titlebar {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .ui-dialog-titlebar-close {
+            background-color: #007bff;
+        }
+
+        .ui-dialog-content {
+            padding: 20px;
+            color: #555;
+        }
+
+        .ui-progressbar-value {
+            background-color: #007bff;
+        }
+
+        #selectable .ui-selecting {
+            background: #a6c9e2;
+        }
+
+        #selectable .ui-selected {
+            background: #007bff;
+            color: white;
+        }
+
+        #tags {
+            margin-top: 20px;
+        }
+
+        #datepicker {
+            margin-top: 20px;
+        }
+
+        #accordion, #tabs, #selectable {
+            margin-top: 20px;
+        }
+
+        /* Dark mode styles */
+        .dark-mode {
+            background-color: #333;
+            color: white;
+        }
+
+        .dark-mode #navbar:hover {
+            background-color: #555;
+        }
+
+        .dark-mode #content {
+            background-color: #444;
+        }
+
+        .dark-mode .post {
+            background-color: #555;
+            color: white;
+        }
+
+        .dark-mode .post h2 {
+            color: white;
+        }
+
+        .dark-mode .post img {
+            filter: grayscale(100%);
+        }
+
+        .dark-mode #info {
+            background-color: #666;
+        }
+
+        .api-buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .api-buttons button {
+            margin: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar">
+        <button id="darkModeToggle">Toggle Dark Mode</button>
+        <input type="text" id="searchBox" placeholder="Search..." autocomplete="off">
+        <button id="searchButton">Search</button>
+    </div>
+    
+    <div id="info"></div>
+    <div id="content" class="api-buttons"></div>
+
+    <script>
+        // Initial content
+        var posts = [
+            { title: 'Post 1', content: 'Content for post 1' },
+            { title: 'Post 2', content: 'Content for post 2' },
+            // Add more posts as needed
+        ];
+
+        // Display initial posts
+        displayPosts(posts);
+
+        // 1. Toggle Dark Mode
+        $('#darkModeToggle').on('click', function () {
+            $('body').toggleClass('dark-mode');
+        });
+
+        // 2. Smooth scroll to content
+        $('#darkModeToggle, #searchButton').on('click', function () {
+            $('html, body').animate({
+                scrollTop: $('#content').offset().top
+            }, 1000);
+        });
+
+        // 3. Hover effect on posts
+        $('#content').on('mouseenter', '.post', function () {
+            $(this).addClass('post-hover');
+        }).on('mouseleave', '.post', function () {
+            $(this).removeClass('post-hover');
+        });
+
+        // 4. Autocomplete on search box
+        var availableTags = ['Tag 1', 'Tag 2', 'Tag 3'];
+        $('#searchBox').autocomplete({
+            source: availableTags
+        });
+
+        // 5. Button click event
+        $('#content').on('click', '.post button', function () {
+            var postTitle = $(this).closest('.post').find('h2').text();
+            alert('Button clicked on post: ' + postTitle);
+        });
+
+        // Function to display posts
+        function displayPosts(posts) {
+            posts.forEach(function (post) {
+                var postElement = createPostElement(post);
+                $('#content').append(postElement);
+            });
+        }
+
+        // Function to create post element
+        function createPostElement(post) {
+            var postElement = $('<div>').addClass('post');
+            postElement.append($('<h2>').text(post.title));
+            postElement.append($('<p>').text(post.content));
+            postElement.append($('<button>').text('Click Me'));
+            return postElement;
+        }
+        function createPostElement(post) {
+            var postElement = $('<div>').addClass('post');
+            postElement.append($('<h2>').text(post.title));
+            postElement.append($('<p>').text(post.content));
+            postElement.append($('<button>').text('Click Me').on('click', function () {
+                alert('Button clicked on post: ' + post.title);
+            }));
+            return postElement;
+        }
+
+        // New Ajax calls and buttons
+        function fetchRandomJoke() {
+            $.ajax({
+                url: 'https://v2.jokeapi.dev/joke/Any',
+                method: 'GET',
+                success: function (data) {
+                    console.log('Random Joke:', data);
+                    var jokeElement = $('<div>').text('Joke: ' + data.joke);
+                    $('#content').append(jokeElement);
+                },
+                error: function () {
+                    console.error('Error fetching joke');
+                }
+            });
+        }
+
+        function fetchWeatherInfo() {
+            // Replace 'your_city' and 'your_api_key' with valid values
+            $.ajax({
+                url: 'https://api.openweathermap.org/data/2.5/weather?q=your_city&appid=your_api_key',
+                method: 'GET',
+                success: function (data) {
+                    console.log('Weather Information:', data);
+                    var weatherElement = $('<div>').text('Temperature: ' + data.main.temp + '°C');
+                    $('#content').append(weatherElement);
+                },
+                error: function () {
+                    console.error('Error fetching weather information');
+                }
+            });
+        }
+
+        function fetchInspirationalQuote() {
+            $.ajax({
+                url: 'https://api.quotable.io/random',
+                method: 'GET',
+                success: function (data) {
+                    console.log('Inspirational Quote:', data);
+                    var quoteElement = $('<div>').text('Quote: ' + data.content);
+                    $('#content').append(quoteElement);
+                },
+                error: function () {
+                    console.error('Error fetching inspirational quote');
+                }
+            });
+        }
+
+        function fetchRandomCatImage() {
+            $.ajax({
+                url: 'https://api.thecatapi.com/v1/images/search',
+                method: 'GET',
+                success: function (data) {
+                    console.log('Cat Image:', data);
+                    var catImageElement = $('<img>').attr('src', data[0].url);
+                    $('#content').append(catImageElement);
+                },
+                error: function () {
+                    console.error('Error fetching cat image');
+                }
+            });
+        }
+
+        function fetchChuckNorrisJoke() {
+            $.ajax({
+                url: 'https://api.chucknorris.io/jokes/random',
+                method: 'GET',
+                success: function (data) {
+                    console.log('Chuck Norris Joke:', data);
+                    var chuckNorrisJokeElement = $('<div>').text('Chuck Norris Joke: ' + data.value);
+                    $('#content').append(chuckNorrisJokeElement);
+                },
+                error: function () {
+                    console.error('Error fetching Chuck Norris joke');
+                }
+            });
+            
+        }
+
+        // Add buttons for new Ajax calls
+        $('<button>').text('Random Joke').on('click', fetchRandomJoke).appendTo('.api-buttons');
+        $('<button>').text('Weather Info').on('click', fetchWeatherInfo).appendTo('.api-buttons');
+        $('<button>').text('Inspirational Quote').on('click', fetchInspirationalQuote).appendTo('.api-buttons');
+        $('<button>').text('Random Cat Image').on('click', fetchRandomCatImage).appendTo('.api-buttons');
+        $('<button>').text('Chuck Norris Joke').on('click', fetchChuckNorrisJoke).appendTo('.api-buttons');
+    </script>
+</body>
+</html>
