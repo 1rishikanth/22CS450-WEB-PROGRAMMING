@@ -1,0 +1,17 @@
+<!-- books.xml -->
+
+<!DOCTYPE bookstore SYSTEM "example.dtd">
+<bookstore>
+  <book category="fiction">
+    <title>Harry Potter and the Sorcerer's Stone</title>
+    <author>J.K. Rowling</author>
+    <year>1997</year>
+    <price>20.00</price>
+  </book>
+  <book category="fiction">
+    <title>To Kill a Mockingbird</title>
+    <author>Harper Lee</author>
+    <year>1960</year>
+    <price>15.00</price>
+  </book>
+</bookstore>
