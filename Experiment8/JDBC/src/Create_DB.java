@@ -18,7 +18,7 @@ public class Create_DB {
     {
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
                 Statement stmt = conn.createStatement();) {
-            String sql = "CREATE DATABASE VRD";
+            String sql = "CREATE DATABASE RISHI";
             stmt.executeUpdate(sql);
             System.out.println("Database created successfully...");
         } catch (SQLException e) {
